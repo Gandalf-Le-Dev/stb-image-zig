@@ -6,21 +6,17 @@ pub fn build(b: *std.Build) !void {
     const optimize = b.standardOptimizeOption(.{});
 
     // STB Image library
-    const stbi = b.dependency("zig_stb_image", .{ .target = target, .optimize = optimize });
+    const stbi = b.dependency("stb_image_zig", .{ .target = target, .optimize = optimize });
 
     // Example application using libstb-image
     const exe = b.addExecutable(.{
-        .name = "zig-stb",
+        .name = "stb_image_zig_test",
         .root_source_file = b.path("main.zig"),
         .version = .{ .major = 0, .minor = 1, .patch = 0 },
         .optimize = optimize,
         .target = target,
     });
 
-    // With the recent changes to the std.Build, we now no longer need to
-    // "know" about the details of our dependent modules!
-    // Much like a CMake target, we can now just "import" the module, and
-    // all of its dependencies are transitively applied.
     exe.root_module.addImport("stb_image", stbi.module("stb_image"));
     b.installArtifact(exe);
 

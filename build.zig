@@ -6,7 +6,7 @@ const CFlags = &[_][]const u8{"-fPIC"};
 pub fn build(b: *std.Build) !void {
     comptime {
         const current_zig = builtin.zig_version;
-        const min_zig = std.SemanticVersion.parse("0.12.0-dev.2030") catch unreachable; // build system changes: ziglang/zig#18160
+        const min_zig = std.SemanticVersion.parse("0.13.0") catch unreachable;
         if (current_zig.order(min_zig) == .lt) {
             @compileError(std.fmt.comptimePrint("Your Zig version v{} does not meet the minimum build requirement of v{}", .{
                 current_zig,
@@ -17,10 +17,6 @@ pub fn build(b: *std.Build) !void {
 
     const optimize = b.standardOptimizeOption(.{});
     const target = b.standardTargetOptions(.{});
-
-    ////////////////////////////////////////////////////////////////////////////
-    // Create the Zig STB Image Module
-    ////////////////////////////////////////////////////////////////////////////
 
     // Compile the C source file into a static library, and ensure it gets installed
     // along with the required include directory

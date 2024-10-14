@@ -1,5 +1,5 @@
 .{
-    .name = "zig-stb-image",
+    .name = "stb_image_zig",
     .version = "2.28.0", // Version from stb_image.h
     .paths = .{
         "include/",
