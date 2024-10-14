@@ -1,0 +1,77 @@
+version: "3"
+
+vars:
+  CLEAN_TARGET: '{{.CLEAN_TARGET | default "all"}}'
+  SCRIPTS_DIR: ./include/stb
+  PROJECT_HEADER_DIR: '{{.TASKFILE_DIR}}/include/stb'
+  SRC_DIR: '{{.TASKFILE_DIR}}/src'
+
+tasks:
+  build:
+    cmds:
+      - zig build
+    desc: Build the project
+    silent: true
+    aliases: [b]
+  
+  update_headers:
+    dir: '{{.SCRIPTS_DIR}}'
+    cmds:
+      - ./update_stb_headers.sh {{.PROJECT_HEADER_DIR}}
+    desc: Update stb headers
+    silent: true
+    aliases: [u]
+
+  split_headers:
+    dir: '{{.SCRIPTS_DIR}}'
+    cmds:
+      - ./split_files.sh {{.SRC_DIR}}
+    desc: Split stb headers
+    silent: true
+    aliases: [s]
+
+  update_and_split_headers:
+    dir: '{{.SCRIPTS_DIR}}'
+    cmds:
+      - task: update_headers
+      - task: split_headers
+    desc: Update and split stb headers
+    silent: true
+    aliases: [uas]
+
+  clean:
+    cmds:
+      - |
+        case {{.CLEAN_TARGET}} in
+          cache)
+            rm -rf .zig-cache
+            echo "Cleaned .zig-cache folder"
+            ;;
+          build)
+            rm -rf zig-out
+            echo "Cleaned zig-out folder"
+            ;;
+          all)
+            rm -rf .zig-cache zig-out
+            echo "Cleaned both .zig-cache and zig-out folders"
+            ;;
+          *)
+            echo "Invalid clean target. Use 'cache', 'build', or don't specify for both."
+            exit 1
+            ;;
+        esac
+    desc: >
+      Clean Zig project artifacts.
+      
+      Usage:
+        task clean CLEAN_TARGET=cache (removes .zig-cache)
+        task clean CLEAN_TARGET=build (removes zig-out)
+        task clean (removes both .zig-cache and zig-out)
+    silent: true
+    aliases: [c]
+
+  default:
+    cmds:
+      - task: build
+    desc: Build stb_image_zig
+    silent: true

@@ -1,6 +1,6 @@
 .{
     .name = "stb_image_zig",
-    .version = "2.28.0", // Version from stb_image.h
+    .version = "1.0.0",
     .paths = .{
         "include/",
         "src/",
