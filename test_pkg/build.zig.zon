@@ -9,8 +9,8 @@
     },
     .dependencies = .{
         .stb_image_zig = .{
-            .url = "git+https://github.com/Gandalf-Le-Dev/stb_image_zig?ref=HEAD#9720b196784c408288650d26e9a10e05a743e761",
-            .hash = "122096d6b388104ed52eb658b652811f4f6c803447918f949f61d8ca932ccd9c5f7e",
+            .url = "git+https://github.com/Gandalf-Le-Dev/stb_image_zig?ref=HEAD#26c381aba1b873c674af392fe850007187b97751",
+            .hash = "1220523b33650772827fff33ed14b69683a436d9cebc669e58c37ddaa61ba69f78fb",
         },
     },
 }

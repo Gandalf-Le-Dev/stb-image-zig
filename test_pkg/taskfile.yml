@@ -1,0 +1,28 @@
+version: "3"
+
+tasks:
+  run:
+    cmds:
+      - zig build run
+    desc: Build and run stb_image_zig
+    silent: true
+    aliases: [r]
+
+  build:
+    cmds:
+      - zig build
+    desc: Build stb_image_zig
+    silent: true
+    aliases: [b]
+
+  update:
+    cmds:
+      - zig fetch --save=stb_image_zig git+https://github.com/Gandalf-Le-Dev/stb_image_zig#HEAD
+    desc: Update stb_image_zig from GitHub HEAD
+    silent: true
+    aliases: [u]
+
+  default:
+    cmds:
+      - task: run
+    silent: true

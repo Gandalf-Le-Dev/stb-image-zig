@@ -18,27 +18,49 @@ pub fn build(b: *std.Build) !void {
     const optimize = b.standardOptimizeOption(.{});
     const target = b.standardTargetOptions(.{});
 
-    // Compile the C source file into a static library, and ensure it gets installed
-    // along with the required include directory
-    const stb = b.addStaticLibrary(.{
-        .name = "stb-image",
-        .optimize = optimize,
-        .target = target,
-        .link_libc = true,
-    });
-    stb.addIncludePath(b.path("include"));
-    stb.addCSourceFile(.{ .file = b.path("src/stb_image.c"), .flags = CFlags });
-    stb.installHeadersDirectory(b.path("include/stb"), "stb", .{});
-    b.installArtifact(stb);
-
-    // Export the 'stb_image' module to downstream packages
-    //
-    // Much like a CMake target, the libraries and includes attached to this module
-    // will apply transitively to the modules of downstream packages, meaning it
-    // should "Just Work"
-    const mod = b.addModule("stb_image", .{
+    _ = b.addModule("root", .{
         .root_source_file = b.path("src/stb_image.zig"),
-        .link_libc = true,
     });
-    mod.linkLibrary(stb);
+
+    const stb_image_lib = b.addStaticLibrary(.{
+        .name = "stb_image",
+        .target = target,
+        .optimize = optimize,
+    });
+    stb_image_lib.addIncludePath(b.path("include/stb"));
+    if (optimize == .Debug) {
+        // TODO: Workaround for Zig bug.
+        stb_image_lib.addCSourceFile(.{
+            .file = b.path("src/stb_image.c"),
+            .flags = &.{
+                "-std=c99",
+                "-fno-sanitize=undefined",
+                "-g",
+                "-O0",
+            },
+        });
+    } else {
+        stb_image_lib.addCSourceFile(.{
+            .file = b.path("src/stb_image.c"),
+            .flags = &.{
+                "-std=c99",
+                "-fno-sanitize=undefined",
+            },
+        });
+    }
+    stb_image_lib.linkLibC();
+    b.installArtifact(stb_image_lib);
+
+    const test_step = b.step("test", "Run stb_image tests");
+
+    const tests = b.addTest(.{
+        .name = "stb_image-tests",
+        .root_source_file = b.path("src/stb_image.zig"),
+        .target = target,
+        .optimize = optimize,
+    });
+    tests.linkLibrary(stb_image_lib);
+    b.installArtifact(tests);
+
+    test_step.dependOn(&b.addRunArtifact(tests).step);
 }
